@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Maggie Sweitzer">
-<meta name="dcterms.date" content="2024-06-25">
+<meta name="dcterms.date" content="2024-06-26">
 
 <title>ST558 Homework 4</title>
 <style>
@@ -59,16 +59,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="Homework4_files/libs/clipboard/clipboard.min.js"></script>
-<script src="Homework4_files/libs/quarto-html/quarto.js"></script>
-<script src="Homework4_files/libs/quarto-html/popper.min.js"></script>
-<script src="Homework4_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="Homework4_files/libs/quarto-html/anchor.min.js"></script>
-<link href="Homework4_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="Homework4_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="Homework4_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="Homework4_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="Homework4_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -77,8 +101,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <body class="fullcontent">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -100,7 +129,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 25, 2024</p>
+      <p class="date">June 26, 2024</p>
     </div>
   </div>
   
@@ -434,45 +463,46 @@ $MAE
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>articles_tbl <span class="ot">&lt;-</span> <span class="fu">get_news</span>(<span class="st">"olympic fencing"</span>, <span class="dv">21</span>, <span class="st">"api_key.R"</span>)</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>articles_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 28 × 8
+<pre><code># A tibble: 26 × 8
    source_name     author title description url   urlToImage publishedAt content
    &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
  1 HYPEBEAST       info@… Phar… Pharrell W… http… https://i… 2024-06-11… "Pharr…
  2 Brit + Co       Jasmi… All … I may not … http… https://w… 2024-06-06… "I may…
- 3 Dazed           Valer… Bebe… At the age… http… https://i… 2024-06-04… "Taken…
- 4 Dazed           Dazed… Read… Out now, t… http… https://i… 2024-06-11… "With …
- 5 Screen Rant     Georg… 10 B… From time … http… https://s… 2024-06-04… "Summa…
- 6 The Seattle Ti… THOMA… Vogu… On Interna… http… https://i… 2024-06-23… "PARIS…
- 7 The Seattle Ti… JEROM… Doze… Curious on… http… https://i… 2024-06-17… "PARIS…
- 8 International … AFP N… Vogu… Paris play… http… https://d… 2024-06-24… "Paris…
- 9 Minneapolis St… The A… Pari… Athletes t… http… https://w… 2024-06-05… "A roa…
-10 Minneapolis St… JEROM… Doze… Curious on… http… https://w… 2024-06-17… "PARIS…
-# ℹ 18 more rows</code></pre>
+ 3 Dazed           Dazed… Read… Out now, t… http… https://i… 2024-06-11… "With …
+ 4 The Seattle Ti… THOMA… Vogu… On Interna… http… https://i… 2024-06-23… "PARIS…
+ 5 The Seattle Ti… JEROM… Doze… Curious on… http… https://i… 2024-06-17… "PARIS…
+ 6 International … AFP N… Vogu… Paris play… http… https://d… 2024-06-24… "Paris…
+ 7 Minneapolis St… The A… Pari… Athletes t… http… https://w… 2024-06-05… "A roa…
+ 8 Minneapolis St… JEROM… Doze… Curious on… http… https://w… 2024-06-17… "PARIS…
+ 9 Newsweek        Dan G… Watc… A post-mat… http… https://d… 2024-06-18… "A Ukr…
+10 Time            Chad … Your… Here’s whe… http… https://a… 2024-06-13… "The S…
+# ℹ 16 more rows</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>articles_tbl <span class="ot">&lt;-</span> <span class="fu">get_news</span>(<span class="st">"presidential debate"</span>, <span class="dv">5</span>, <span class="st">"api_key.R"</span>)</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>articles_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 92 × 8
+<pre><code># A tibble: 89 × 8
    source_name     author title description url   urlToImage publishedAt content
    &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;  
  1 Wired           Maken… Unwe… "TikTok cr… http… https://m… 2024-06-24… "Rober…
  2 NPR             Steve… Bide… "NPR's Ste… http… https://m… 2024-06-24… "NPR's…
  3 Business Insid… Grace… Trum… "Trump say… http… https://i… 2024-06-24… "Donal…
- 4 Business Insid… Brent… RFK … "Shannahan… http… https://i… 2024-06-20… "Attor…
- 5 Business Insid… Jacob… Hush… "Manhattan… http… https://i… 2024-06-21… "Donal…
- 6 ReadWrite       Sophi… Kasp… "To bolste… http… https://r… 2024-06-21… "To bo…
- 7 ReadWrite       Radek… Wink… "Gemini CE… http… https://r… 2024-06-21… "Gemin…
- 8 Time            Rebec… Trum… "Donald Tr… http… https://a… 2024-06-23… "Forme…
- 9 Slate Magazine  Ivy B… Ever… "But will … http… https://c… 2024-06-22… "This …
-10 ABC News        Tal A… Bide… "Thursday'… http… https://i… 2024-06-24… "Even …
-# ℹ 82 more rows</code></pre>
+ 4 Business Insid… Jacob… Hush… "Manhattan… http… https://i… 2024-06-21… "Donal…
+ 5 ReadWrite       Sophi… Kasp… "To bolste… http… https://r… 2024-06-21… "To bo…
+ 6 ReadWrite       Radek… Wink… "Gemini CE… http… https://r… 2024-06-21… "Gemin…
+ 7 Time            Rebec… Trum… "Donald Tr… http… https://a… 2024-06-23… "Forme…
+ 8 Slate Magazine  Ivy B… Ever… "But will … http… https://c… 2024-06-22… "This …
+ 9 ABC News        Tal A… Bide… "Thursday'… http… https://i… 2024-06-24… "Even …
+10 ABC News        Alexa… Bide… "How will … http… https://i… 2024-06-24… "Presi…
+# ℹ 79 more rows</code></pre>
 </div>
 </div>
+
+
 </section>
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
