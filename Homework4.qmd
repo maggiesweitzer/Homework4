@@ -1,0 +1,295 @@
+---
+title: "ST558 Homework 4"
+author: "Maggie Sweitzer"
+date: "`r Sys.Date()`"
+format: html
+editor: visual
+---
+
+## Task 1: Conceptual Questions
+
+**1. What is the purpose of the lapply() function? What is the equivalent purrr function?**
+
+-   The lapply() function allows you to apply a function across all elements of a list.
+-   The equivalent purrr function is map().
+
+**2. Suppose we have a list called my_list. Each element of the list is a numeric data frame (all columns are numeric). we want to use lapply() to run the code cor(numeric_matrix, method = "kendall") on each element of hte list. Write code to do this below! (I.e., how do you specify method = "kendall" when calling lapply?)**
+
+-   lapply(X = my_list, FUN = cor, method = "kendall")
+
+**3. What are two advantages of using purrr functions instead of the BaseR apply family?**
+
+-   Purrr functions allow for consistent syntax across the family of functions. By contrast, the base R apply family has idiosyncratic coding differences from one function to the next, which is more difficult to use and track.
+-   Purrr functions have additional short-hand functionality, such as being able to specify the type of output (e.g., character or double). Although this can also be done with the apply family, it requires additional steps.
+
+**4. What is a side-effect function?**
+
+-   A side-effect function uses the input data to generate some sort of output (e.g., printing or plotting something), but does not directly transform or modify the data. Because of this, once the desired output is generated, the data set it was derived from is no longer accessible for additional operations within the same pipe (i.e., the data would need to be called again). This can be overridden, however, through use of walk() instead of map(), or by adding invisible() at the end of the side-effect function.
+
+**5. Why can you name a variable sd in a function and not cause any issues with the sd function?**
+
+-   This is because the variables specified within the function operate within a temporary function environment. This means they are available for use within the function but do not overwrite objects of the same name within the global environment (or other packages). Once the function is executed, the temporary function environment is gone and only the original global objects remain.
+
+## Task 2: Writing R Functions
+
+### Step 1.  
+
+First, we will write a basic function (call it getRMSE()) that takes in a vector of responses and a vector of predictions and outputs the RMSE, based on the formula below.
+
+RMSE = $\sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_{i} - \hat y_{i})^2}$
+
+First we load the purrr package.
+```{r, ECHO = FALSE, warning = FALSE, message=FALSE}
+library(purrr)
+```
+
+The function below requires the two vectors as inputs, and allows for additional arguments, which can be used to specify na.rm = TRUE to allow the calculations to proceed despite missing responses. The function uses map2_vec with an anonymous function that will compute the squared difference between the response value (x) and the predicted value (y) across all observations. This is temporarily stored as sqdiff. Then, this output is passed to the mean function, which also allows for an additional argument specfied when calling the function to be passed through. The square root of the mean is then taken, and the result is returned as RMSE.
+
+```{r}
+getRMSE <- function(response_vec, predict_vec, ...) {
+  sqdiff <- map2_vec(response_vec, predict_vec, \(x, y) (x-y)^2)
+  RMSE <- sqrt(mean(sqdiff, ...))
+  RMSE
+}
+
+```
+
+### Step 2.  
+
+Below, we run code to generate a vector of responses (resp) and a vector of predictions (pred). We then test the function above using these values.
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+
+```
+
+We then test our getRMSE function using these vectors.
+
+```{r}
+getRMSE(resp, pred)
+
+```
+
+We can then test out how the function handles missing values by first replacing a couple of the response values with NA values.
+
+```{r}
+resp <- replace(resp, c(35, 60), NA_real_)
+resp
+```
+
+Calling the function without the additional argument na.rm = TRUE just returns a value of NA.
+
+```{r}
+getRMSE(resp, pred)
+```
+
+Adding the additional argument na.rm = TRUE returns a numerical value.
+
+```{r}
+getRMSE(resp, pred, na.rm = TRUE)
+```
+
+### Step 3.  
+
+Next, we create a function to calculate mean absolute deviation, given by the following formula:
+
+MAE = $\frac{1}{n} \sum_{i=1}^{n} |y_{i} - \hat y_{i}|$
+
+As before, the function requires the two vectors as inputs, and allows for additional arguments, which can be used to specify na.rm = TRUE.
+
+```{r}
+getMAE <- function(response_vec, predict_vec, ...) {
+  absdiff <- map2_vec(response_vec, predict_vec, \(x, y) abs(x-y))
+  MAE <- mean(absdiff, ...)
+  MAE
+}
+```
+
+### Step 4.  
+
+As before, we can generate data for testing.
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+We can then test our getMAE function using these vectors.
+
+```{r}
+getMAE(resp, pred)
+```
+
+Then we again substitute missing values for two of the responses, and test our function with and without the additional argument na.rm = TRUE.
+
+```{r}
+resp <- replace(resp, c(35, 60), NA_real_)
+
+getMAE(resp, pred)
+
+getMAE(resp, pred, na.rm = TRUE)
+```
+
+### Step 5.  
+
+After testing both functions, we can now include them in a wrapper function that will call both "helper" functions and return the values. We will create the function to first perform a check to ensure that both vectors are numeric, and will then compute RMSE and/or MAE metrics depending on the arguments passed. Both RMSE and MAE will be returned by default, but these can be turned off by specifying RMSE = FALSE or MAE = FALSE.
+
+```{r}
+wrapper <- function(response_vec, predict_vec, RMSE = TRUE, MAE = TRUE, ...) {
+  if (!is.numeric(response_vec) | !is.numeric(predict_vec) 
+    | !is.vector(response_vec) | !is.vector(predict_vec)) {
+    stop("Not a numeric vector. Result cannot be calculated")
+  }
+  if(RMSE) {
+    RMSE <- getRMSE(response_vec, predict_vec,...)
+  }
+  if(MAE) {
+    MAE <- getMAE(response_vec, predict_vec,...)
+  }
+  return(list("RMSE" = RMSE, "MAE" = MAE))
+}
+
+```
+
+### Step 6.  
+
+Next, we will return to generating our response and prediction vectors to test the wrapper function.
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+Our first tests call the function for each metric individually and then combined. Calling RMSE only
+
+```{r}
+wrapper(resp, pred, MAE=FALSE)
+
+```
+
+Calling MAE only
+
+```{r}
+wrapper(resp, pred, RMSE = FALSE)
+```
+
+Calling both together
+
+```{r}
+wrapper(resp, pred)
+```
+
+Repeating the test replacing 2 responses with NA
+
+```{r}
+resp <- replace(resp, c(35, 60), NA_real_)
+
+wrapper(resp, pred)
+
+wrapper(resp, pred, na.rm = TRUE)
+
+```
+
+Finally, we will create a character vector and a numeric data frame and test if it passes the initial test for a numeric vector
+
+```{r}
+#| error: TRUE
+
+my_df <- data.frame(pred, resp)
+
+char_vec <- c("a", "b", "c", "d", "e", "f", "g")
+
+wrapper(my_df, pred)
+
+wrapper(char_vec, pred)
+```
+
+## Task 3: Querying an API and a Tidy-Style Function
+
+### Step 1.  
+
+First, we will query data from newsapi.org on a topic of interest. To do this, we first create an R file (api_key.R) storing the digits of the API key obtained from the website. We then obtain the structure of the URL from the website, and modify this to include the topic of interest ("Nintendo Switch" based on my daughter's input) and desired dates (past 7 days). We will keep the specifier to sort by popularity. This url is then pasted together with the content of the api_key.R and stored in the object "news_url". We can then call the data using httr::GET.
+
+```{r, ECHO = FALSE, warning = FALSE, message=FALSE}
+
+library(jsonlite)
+library(httr)
+library(tidyverse)
+```
+
+```{r,  warning = FALSE, message=FALSE}
+news_url <- paste0("https://newsapi.org/v2/everything?q=Nintendo%20Switch&from=2024-06-18&sortBy=popularity&apiKey=", readLines('api_key.R'))
+
+news_return <- httr::GET(news_url)
+```
+
+### Step 2.  
+
+Next, we parse the data using rawToChar combined with fromJSON. We are specifically looking to parse the data from content, so this is specified below. Once we parse the content, we then store the articles element as a tibble, making some minor modifications to more easily access the source name, remove entries with no content, and then selecting/rearranging the desired columns. The final data set will be stored as "articles_tbl".
+
+```{r}
+
+parsed_content <- fromJSON(rawToChar(news_return$content))
+
+articles_tbl <- as_tibble(parsed_content$articles) |>
+  mutate(source_name = source$name) |>
+  filter(!is.na(author)) |>
+  select(source_name, author, title, description, url, 
+         urlToImage, publishedAt, content)
+
+articles_tbl
+```
+
+### Step 3.  
+
+Finally, we create a function that will allow users to easily query this API for any topic to yield a tibble with the desired information. This function takes in 3 arguments: 1) topic can include a word or phrase and must be entered in quotes; 2) the number of days to be searched prior to today; and 3) the name of the .R file storing the api key, which also should be entered in quotes.
+
+The function will then remove spaces from the search terms, convert the number of days to a starting date, and reference the api file to pull the character string for the api key. This information is then pasted together with the rest of the required url and temporarily stored as "news_url". From there, the function will follow the steps outlined above to get the data using the url, parse this to access the content, and store the contained articles as a tibble with slight modifications for ease of use.
+
+```{r}
+library(lubridate)
+
+get_news <- function(topic, days, api) {
+  #Calculate start date and remove "UTC"
+  date <- today() - ddays(days) 
+  date <- sub(" UTC", "", date)
+  #Swap out %20 for any spaces in search terms
+  topic_nospace <- sub(" ", "%20", topic)
+  #Get api_key from stored file
+  api_key <- readLines(api)
+  #build url
+  news_url <- paste0("https://newsapi.org/v2/everything?q=", topic_nospace,
+                     "&from=", date, "&sortBy=popularity&apiKey=", api_key)
+  #get content
+  news_return <- httr::GET(news_url)
+  #parse content
+  parsed_content <- fromJSON(rawToChar(news_return$content))
+  #modify and store as tibble
+  articles_tbl <- as_tibble(parsed_content$articles) |>
+    mutate(source_name = source$name) |>
+    filter(!is.na(author)) |>
+    select(source_name, author, title, description, url, 
+         urlToImage, publishedAt, content)
+}
+
+```
+
+Here, we test the function by searching for articles on "olympic fencing" in the past 21 days and "presidential debate" in the last 5 days.
+
+```{r}
+articles_tbl <- get_news("olympic fencing", 21, "api_key.R")
+articles_tbl
+
+articles_tbl <- get_news("presidential debate", 5, "api_key.R")
+articles_tbl
+```
